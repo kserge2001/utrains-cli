@@ -812,17 +812,41 @@ def _offer_install() -> bool:
     return False
 
 
+_SHELL_NAMES = {
+    "cmd.exe", "powershell.exe", "pwsh.exe", "windowsterminal.exe", "wt.exe",
+    "openconsole.exe", "conhost.exe", "bash.exe", "sh.exe", "zsh", "bash", "sh",
+    "fish", "tmux", "login", "terminal", "iterm2", "alacritty", "kitty",
+    "wezterm-gui", "code", "code.exe", "node",
+}
+
+
 def _launched_by_double_click() -> bool:
-    """True if a frozen binary was started from Explorer/Finder (its own fresh
-    console window), so we should hold the window open instead of vanishing."""
+    """True if a frozen binary was started from Explorer/Finder (so we should hold
+    the window open). We look at the LAUNCHING process: a shell/terminal means the
+    user ran it themselves; Explorer/Finder means it was double-clicked."""
     if not getattr(sys, "frozen", False):
         return False
+    me = os.path.basename(sys.executable).lower()
+    try:
+        import psutil
+        proc = psutil.Process().parent()
+        # PyInstaller --onefile runs a bootloader of the SAME exe name; skip past it.
+        hops = 0
+        while proc and (proc.name() or "").lower() == me and hops < 6:
+            proc = proc.parent()
+            hops += 1
+        if proc is None:
+            return False
+        return (proc.name() or "").lower() not in _SHELL_NAMES
+    except Exception:
+        pass
+    # Fallback (no psutil): count console clients. Double-click = bootloader+app (2);
+    # a terminal adds the shell (3+).
     if sys.platform == "win32":
         try:
             import ctypes
-            buf = (ctypes.c_uint * 4)()
-            # Only THIS process attached to the console → it was double-clicked.
-            return ctypes.windll.kernel32.GetConsoleProcessList(buf, 4) <= 1
+            buf = (ctypes.c_uint * 8)()
+            return ctypes.windll.kernel32.GetConsoleProcessList(buf, 8) <= 2
         except Exception:
             return False
     return False
@@ -830,14 +854,17 @@ def _launched_by_double_click() -> bool:
 
 def main(argv: list[str] | None = None) -> int:
     """Entry point - runs the CLI and turns Ctrl+C into a clean exit."""
-    enable_utf8_output()
-    config.load_env()   # pull API keys from ~/.utrains/.env (and ./.env) if present
-    hold = _launched_by_double_click()
+    hold = _launched_by_double_click()   # before anything that could fail
     try:
+        enable_utf8_output()
+        config.load_env()   # pull API keys from ~/.utrains/.env (and ./.env)
         return _dispatch(argv)
     except KeyboardInterrupt:
         print("\n" + ui.style("Interrupted. Bye!", "dim"))
         return 130
+    except Exception as exc:   # noqa: BLE001 - surface, don't silently vanish
+        print("\n" + ui.style(f"utrains hit an unexpected error: {exc}", "danger"))
+        return 1
     finally:
         if hold:
             try:

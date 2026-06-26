@@ -42,7 +42,7 @@ jobs:
           pyinstaller --onefile --name utrains
           --collect-all textual
           --collect-submodules utrains
-          --hidden-import anthropic --hidden-import openai
+          --hidden-import psutil --hidden-import anthropic --hidden-import openai
           packaging/entry.py
 
       - name: Rename for the platform
