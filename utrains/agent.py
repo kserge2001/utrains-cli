@@ -1,5 +1,5 @@
 """
-The reasoning loop — utrains' "brain wiring".
+The reasoning loop - utrains' "brain wiring".
 
 It runs the classic agent cycle against a LOCAL model:
 
@@ -57,7 +57,7 @@ def _open_in_vscode(result: dict, emit) -> None:
         return
     full = path if os.path.isabs(path) else os.path.join(os.getcwd(), path)
     if not os.path.isfile(full):
-        return   # loose match that isn't an actual file — ignore it
+        return   # loose match that isn't an actual file - ignore it
     try:
         subprocess.Popen(f'code -g "{full}:{line}"', shell=True,
                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -102,11 +102,11 @@ def _natural_reply(model: str, task: str, context: str) -> str:
     Generate a plain-language reply for a conversational turn.
 
     Used when the model finishes without writing a final_answer (e.g. it answers
-    "hi" with an empty JSON object) — instead of a blank "Done." we ask it again,
+    "hi" with an empty JSON object) - instead of a blank "Done." we ask it again,
     without the JSON straitjacket, to just talk to the user.
     """
     system = ("You are utrains, a friendly local terminal assistant. Reply to the "
-              "user's message in 1-2 short, natural sentences. Plain text only — no JSON.")
+              "user's message in 1-2 short, natural sentences. Plain text only - no JSON.")
     if context.strip():
         system += "\n\nThings to keep in mind:\n" + context.strip()
     try:
@@ -122,7 +122,7 @@ def _coach_error(model: str, command: str, result: dict) -> dict | None:
 
     Returns {"kind": "tiny"|"real", "hint": "..."} or None.
 
-    - "tiny": a small, learnable slip a DevOps student should fix THEMSELVES — a
+    - "tiny": a small, learnable slip a DevOps student should fix THEMSELVES - a
       missing quote/bracket/comma, a typo, a wrong name or casing, bad
       indentation. The hint is a playful nudge that points at the spot and the
       KIND of thing to look for, WITHOUT giving the fix away.
@@ -142,11 +142,11 @@ def _coach_error(model: str, command: str, result: dict) -> dict | None:
         "name or casing, bad indentation. For 'tiny', the hint must be fun and "
         "encouraging, point them to the offending line and the KIND of thing to "
         "hunt for (e.g. 'a quote that opened but never closed'), and must NOT give "
-        "the exact fix — let them find it. Emoji welcome.\n"
+        "the exact fix - let them find it. Emoji welcome.\n"
         "Choose kind='real' for anything bigger (missing tool, network, "
         "permissions, broken logic, real config work). For 'real', the hint "
         "plainly explains what went wrong in beginner language.\n"
-        "JSON only — no markdown, no code fences."
+        "JSON only - no markdown, no code fences."
     )
     user = f"Command that failed:\n{command}\n\nError output:\n{err[:1500]}"
     try:
@@ -164,10 +164,10 @@ def _coach_error(model: str, command: str, result: dict) -> dict | None:
 
 _NEEDS_COMMANDS = "NEEDS_COMMANDS"
 
-# What `/status` asks for — a Copilot-style "where we left off" board.
+# What `/status` asks for - a Copilot-style "where we left off" board.
 STATUS_REQUEST = (
     "Give me a status board to resume this session from. Use ONLY what actually "
-    "happened in our conversation so far — do NOT run new commands unless truly "
+    "happened in our conversation so far - do NOT run new commands unless truly "
     "necessary. Format it as: a short `## heading`, then a Markdown table of the "
     "steps with a Status column using badges (✅ done · ▶ next · ⏳ pending), then "
     "the next command to run in a fenced ``` code block. End with one short line "
@@ -177,36 +177,36 @@ STATUS_REQUEST = (
 
 def _route(model: str, task: str, context: str, chat_history) -> str | None:
     """
-    Action-first gate (this is a TERMINAL — doing beats chatting).
+    Action-first gate (this is a TERMINAL - doing beats chatting).
 
     Returns None for anything that could be run/built/inspected on the machine, so
-    the caller drops into the agentic command loop — that's the default. Only when
+    the caller drops into the agentic command loop - that's the default. Only when
     the message clearly needs no system access (a greeting, something already
     answered this session, a general-knowledge question) does it return a plain
     text answer, skipping the command loop.
 
     A quick non-JSON chat call still decides this, so greetings stay snappy and we
-    don't re-run commands for things already known — but the bias is to act.
+    don't re-run commands for things already known - but the bias is to act.
     """
     system = (
         "You are utrains, an agent at the user's TERMINAL. People open a terminal "
-        "to DO things — run commands, inspect the system, build, install, deploy, "
+        "to DO things - run commands, inspect the system, build, install, deploy, "
         "fix. So your DEFAULT is to TAKE ACTION, not to chat.\n\n"
         f"Reply with exactly the single token {_NEEDS_COMMANDS} whenever the message "
-        "could be accomplished or answered by running something on this machine — "
+        "could be accomplished or answered by running something on this machine - "
         "listing, inspecting, creating, editing, installing, building, testing, "
         "deploying, fixing, 'show me X', 'what's my Y', or even a bare noun/phrase "
         "like 'the logs', 'git status', 'disk space'. WHEN IN DOUBT, CHOOSE THIS.\n"
         "Also choose it for any imperative to run/re-run/retry, and for any "
         "validate/test/build/lint/status check (its result changes when files "
-        "change, so a past run never answers it — never say you already ran it).\n\n"
+        "change, so a past run never answers it - never say you already ran it).\n\n"
         "ONLY answer directly in words (no commands) when the message clearly needs "
         "NO system access:\n"
         "- a greeting, thanks, or small talk,\n"
         "- a question you ALREADY answered or ran earlier THIS session,\n"
         "- a general-knowledge / 'how does X work' / explain-this question,\n"
         "- the user explicitly just wants to talk or asks what you can do.\n\n"
-        f"Reply with EITHER a normal answer OR exactly {_NEEDS_COMMANDS} — nothing else."
+        f"Reply with EITHER a normal answer OR exactly {_NEEDS_COMMANDS} - nothing else."
     )
     if context.strip():
         system += "\n\nWhat you already know this session:\n" + context.strip()
@@ -296,7 +296,7 @@ def run_task(task: str, model: str, system: dict, *, confirm, dry_run: bool = Fa
                     return reply_text
             return thought or "Done."
 
-        # We're about to act — now the step header makes sense.
+        # We're about to act - now the step header makes sense.
         emit("thought", {"step": step, "thought": thought})
 
         # --- MCP tool call ------------------------------------------------
@@ -343,10 +343,10 @@ def run_task(task: str, model: str, system: dict, *, confirm, dry_run: bool = Fa
         # rather than spinning forever.
         recent_commands.append(command)
         if recent_commands.count(command) >= 3:
-            emit("error", "Already ran that command — not repeating it.")
+            emit("error", "Already ran that command - not repeating it.")
             return (f"I've already run `{command}` a couple of times this turn and keep "
                     "getting the same result, so I won't run it again. If that output "
-                    "showed errors, those are the real thing to fix — tell me to fix "
+                    "showed errors, those are the real thing to fix - tell me to fix "
                     "them, or let me know what you'd like to do next.")
 
         if dry_run:
@@ -391,7 +391,7 @@ def run_task(task: str, model: str, system: dict, *, confirm, dry_run: bool = Fa
                 else:
                     consecutive_failures = 0
                 if consecutive_failures >= 4:
-                    emit("error", "Several commands failed in a row — stopping.")
+                    emit("error", "Several commands failed in a row - stopping.")
                     last_err = (result.get("stderr") or result.get("stdout") or "").strip()
                     return ("I tried several approaches but commands kept failing on this "
                             "system, so I stopped. Last error:\n" + last_err[:400]
@@ -400,5 +400,5 @@ def run_task(task: str, model: str, system: dict, *, confirm, dry_run: bool = Fa
         next_input = prompts.command_observation(command, result)
 
     emit("error", f"Reached the {max_steps}-step limit without finishing.")
-    return (f"Stopped after {max_steps} steps. The task may be partly done — "
+    return (f"Stopped after {max_steps} steps. The task may be partly done - "
             f"re-run utrains with a more specific request to continue.")

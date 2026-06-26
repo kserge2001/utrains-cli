@@ -1,5 +1,5 @@
 """
-utrains memory — what the agent is allowed to remember between turns and sessions.
+utrains memory - what the agent is allowed to remember between turns and sessions.
 
 Two kinds of memory:
   • Session memory : the recent task → answer pairs from THIS chat session, so a
@@ -9,7 +9,7 @@ Two kinds of memory:
     ~/.utrains/memory.md, injected into the prompt on every run. Good for facts
     like "prod cluster is eks-east" or "default AWS profile is acme-prod".
 
-A single switch (`memory_enabled`, default ON) turns BOTH off — handy when you
+A single switch (`memory_enabled`, default ON) turns BOTH off - handy when you
 want a clean, context-free run or a faster prompt on a small model.
 """
 

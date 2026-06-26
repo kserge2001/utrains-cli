@@ -1,5 +1,5 @@
 """
-A little personality for utrains — because terminals don't have to be boring.
+A little personality for utrains - because terminals don't have to be boring.
 
 Just word lists and a picker. Everything here is cosmetic: the agent's actual
 behaviour never depends on which quip got chosen. Set UTRAINS_SERIOUS=1 in the
@@ -19,7 +19,7 @@ THINKING = [
 
 # One-liners shown when a chat session starts.
 GREETINGS = [
-    "Utrains student detected — superpowers loading… ⚡",
+    "Utrains student detected - superpowers loading… ⚡",
     "Your wish is my command line. 🪄",
     "Let's make the terminal do your homework. 😎",
     "Type a goal, I'll do the typing. ⌨️",
@@ -35,10 +35,10 @@ WINS = [
 # Cheers when a student fixes their own broken command and it finally passes.
 PRAISE = [
     "🎉 You found it! That's exactly how debugging feels.",
-    "🙌 Nailed it — you fixed it yourself!",
+    "🙌 Nailed it - you fixed it yourself!",
     "✨ Green light! Your eyes are getting sharp.",
     "🥳 That's the one! Real DevOps muscle right there.",
-    "👏 Boom — fixed and passing. Well spotted!",
+    "👏 Boom - fixed and passing. Well spotted!",
     "🚀 You squashed it. On to the next one!",
 ]
 
@@ -53,14 +53,14 @@ GOODBYES = [
 # Rotating one-line tips shown at startup.
 TIPS = [
     "Tip: type /help to see everything I can do.",
-    "Tip: I use YOUR aws / kube / gh logins — no keys needed.",
+    "Tip: I use YOUR aws / kube / gh logins - no keys needed.",
     "Tip: nervous about a command? Just hit 2 to skip it.",
     "Tip: /model swaps my brain mid-chat.",
     'Tip: /memory add "..." makes me remember things.',
-    "Tip: I run real commands — read before you hit Enter. 👀",
+    "Tip: I run real commands - read before you hit Enter. 👀",
 ]
 
-# Phrases that mean a task did NOT succeed — used to skip the win tag.
+# Phrases that mean a task did NOT succeed - used to skip the win tag.
 _FAIL_HINTS = ("could not", "couldn't", "error", "failed", "stopped after",
                "declined", "isn't", "not reachable")
 
@@ -77,7 +77,7 @@ def pick(seq: list[str]) -> str:
 
 
 def win_tag(answer: str) -> str:
-    """A celebratory tag for a *successful* answer — '' otherwise or when muted."""
+    """A celebratory tag for a *successful* answer - '' otherwise or when muted."""
     if _muted():
         return ""
     low = answer.lower()

@@ -1,7 +1,7 @@
 """
 First-run setup: get Ollama installed, get the server running, and pull a model.
 
-`utrains setup` calls run_setup(). It is deliberately conservative — it tells you
+`utrains setup` calls run_setup(). It is deliberately conservative - it tells you
 what it's about to do, and on Windows/macOS it falls back to printing the
 official download link rather than silently installing system software.
 """

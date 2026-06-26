@@ -120,7 +120,7 @@ class MCPServer:
                 if "error" in msg:
                     raise MCPError(msg["error"].get("message", "unknown error"))
                 return msg.get("result", {})
-            # otherwise it's a notification or unrelated reply — ignore it
+            # otherwise it's a notification or unrelated reply - ignore it
 
     def _notify(self, method: str, params: dict | None = None) -> None:
         self._send({"jsonrpc": "2.0", "method": method, "params": params or {}})

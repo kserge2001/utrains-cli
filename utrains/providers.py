@@ -1,5 +1,5 @@
 """
-Model backends — local Ollama, Anthropic Claude, or OpenAI GPT.
+Model backends - local Ollama, Anthropic Claude, or OpenAI GPT.
 
 utrains picks the backend from the model NAME, so the rest of the app doesn't
 care which one is in use:
@@ -8,9 +8,9 @@ care which one is in use:
   - "gpt-*", "chatgpt*", "o1/o3/o4*"  -> OpenAI API      (needs OPENAI_API_KEY)
   - anything else (e.g. "qwen2.5:14b")-> local Ollama
 
-The cloud SDKs (`anthropic`, `openai`) are optional — they're imported lazily,
+The cloud SDKs (`anthropic`, `openai`) are optional - they're imported lazily,
 so an Ollama-only user never needs them installed. API keys come from the
-environment (or ~/.utrains/.env — see config.load_env()).
+environment (or ~/.utrains/.env - see config.load_env()).
 """
 
 import os
@@ -76,7 +76,7 @@ def _anthropic_chat(model: str, messages: list[dict], timeout: int) -> str:
     kwargs = {
         "model": model,
         "max_tokens": 4096,
-        # Note: temperature / thinking are intentionally omitted — Opus 4.8/4.7
+        # Note: temperature / thinking are intentionally omitted - Opus 4.8/4.7
         # reject `temperature`, and the JSON-only instruction in our prompt keeps
         # the reply terse without enabling thinking.
         "messages": convo or [{"role": "user", "content": "continue"}],

@@ -1,5 +1,5 @@
 """
-The thin wire to Ollama — the local model server that powers the agent.
+The thin wire to Ollama - the local model server that powers the agent.
 
 Ollama exposes a simple HTTP API on http://localhost:11434. We only need three
 things from it: check it's up, list the models you've pulled, and run a chat

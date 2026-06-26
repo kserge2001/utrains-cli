@@ -7,7 +7,7 @@ Two jobs:
   2. Find which command-line tools are installed (docker, aws, az, gh, git, …)
      so the agent only reaches for tools that actually exist.
 
-The amount of RAM also decides which local model we recommend — bigger models
+The amount of RAM also decides which local model we recommend - bigger models
 need more memory.
 """
 
@@ -60,7 +60,7 @@ def default_shell_label() -> str:
 
 
 def system_summary() -> dict:
-    """One tidy dictionary describing this machine — fed to the agent and shown by `doctor`."""
+    """One tidy dictionary describing this machine - fed to the agent and shown by `doctor`."""
     return {
         "os": platform.system(),               # Windows / Linux / Darwin
         "os_release": platform.release(),

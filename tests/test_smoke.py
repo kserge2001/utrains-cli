@@ -1,4 +1,4 @@
-"""Lightweight tests that don't need Ollama or a network — just verify the wiring."""
+"""Lightweight tests that don't need Ollama or a network - just verify the wiring."""
 
 import pytest
 

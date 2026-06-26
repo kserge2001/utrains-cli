@@ -1,9 +1,9 @@
 """
-Textual TUI for utrains — a Cursor/Copilot-style chat interface.
+Textual TUI for utrains - a Cursor/Copilot-style chat interface.
 
 This is the rich front-end: a scrollable conversation, command output folded into
 collapsible panels you can expand/collapse (and click), a status line, and a
-docked input box at the bottom. The agent/executor/MCP/memory core is unchanged —
+docked input box at the bottom. The agent/executor/MCP/memory core is unchanged -
 this module only renders it.
 
 The agent runs in a background worker thread; UI updates are marshalled back with
@@ -163,7 +163,7 @@ class UtrainsApp(App):
             yield Link(ui.BRAND_PHONE.strip(), url=tel)
         with Vertical(classes="welcome"):
             yield Static("", id="banner")
-            yield Static("Tell me what you want — I'll run the commands to do it.",
+            yield Static("Tell me what you want - I'll run the commands to do it.",
                          classes="welcome-tag")
             yield Static("/status · /ai · /coach · /auto · /model · /memory · /output · exit",
                          classes="welcome-cmds")
@@ -310,8 +310,8 @@ class UtrainsApp(App):
         head, arg = head.lower(), arg.strip()
         if head in ("/ai", "ai"):
             self.ai_on = {"on": True, "off": False}.get(arg.lower(), not self.ai_on)
-            msg = ("✓ AI ON — type a goal and I'll do it." if self.ai_on
-                   else "✓ AI OFF — plain shell; type raw commands and I'll run them.")
+            msg = ("✓ AI ON - type a goal and I'll do it." if self.ai_on
+                   else "✓ AI OFF - plain shell; type raw commands and I'll run them.")
             self._write(Static(msg, classes="win" if self.ai_on else "skipped"))
             self._idle_status()
             return
@@ -329,8 +329,8 @@ class UtrainsApp(App):
             return
         if head in ("/coach", "coach"):
             self.coach = {"on": True, "off": False}.get(arg.lower(), not self.coach)
-            msg = ("✓ Coach ON — small slips become a nudge for you to fix. 👀"
-                   if self.coach else "✓ Coach OFF — I'll fix small errors myself.")
+            msg = ("✓ Coach ON - small slips become a nudge for you to fix. 👀"
+                   if self.coach else "✓ Coach OFF - I'll fix small errors myself.")
             self._write(Static(msg, classes="win" if self.coach else "skipped"))
             self._idle_status()
             return
@@ -338,15 +338,15 @@ class UtrainsApp(App):
             a = arg.lower()
             if a == "off":
                 self.auto, self.force = False, False
-                self._write(Static("✓ Auto OFF — I'll ask before each command.", classes="win"))
+                self._write(Static("✓ Auto OFF - I'll ask before each command.", classes="win"))
             elif a == "force":
                 self.auto, self.force = True, True
-                self._write(Static("⚠ Auto FORCE — running EVERYTHING unattended, including "
+                self._write(Static("⚠ Auto FORCE - running EVERYTHING unattended, including "
                                    "dangerous commands. Throwaway environments only.",
                                    classes="command danger"))
             else:
                 self.auto, self.force = True, False
-                self._write(Static("✓ Auto ON — hands-free. Safe commands run on their own; "
+                self._write(Static("✓ Auto ON - hands-free. Safe commands run on their own; "
                                    "dangerous ones are skipped & logged. Go get some sleep. 😴",
                                    classes="win"))
             self._idle_status()
@@ -372,7 +372,7 @@ class UtrainsApp(App):
         context = memory.build_context()
         if remember and self.actions:
             context = (context + "\n\n" if context else "") + (
-                "Commands already run this session and their results — reuse these "
+                "Commands already run this session and their results - reuse these "
                 "answers, do NOT run the same command again for the same info:\n"
                 + "\n".join(self.actions[-10:]))
         answer = agent.run_task(
@@ -474,7 +474,7 @@ class UtrainsApp(App):
             return
         provider = detect_provider(name)
         if provider in key_for and not os.getenv(key_for[provider]):
-            self._write(Static(f"✗ {key_for[provider]} isn't set — can't use '{name}'.",
+            self._write(Static(f"✗ {key_for[provider]} isn't set - can't use '{name}'.",
                                classes="command danger"))
             return
         if provider == "ollama" and not ollama_client.has_model(name):
@@ -535,7 +535,7 @@ class UtrainsApp(App):
             self._write(Static(payload["text"], classes="opened"))
         elif kind == "opened":
             self._write(Static(f"📂 opened {payload['path']}:{payload['line']} in VS Code "
-                               "— take a look 👀", classes="opened"))
+                               "- take a look 👀", classes="opened"))
         elif kind == "error":
             self._write(Static(f"✗ {payload}", classes="command danger"))
 

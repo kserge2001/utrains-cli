@@ -1,9 +1,9 @@
 """
-The agent's "hands" — it actually runs the shell commands.
+The agent's "hands" - it actually runs the shell commands.
 
 We run each command through the machine's native shell (PowerShell on Windows,
-bash elsewhere) so that anything you could type yourself — docker, aws, az, gh,
-python, git, kubectl, … — just works. Output is captured and handed back to the
+bash elsewhere) so that anything you could type yourself - docker, aws, az, gh,
+python, git, kubectl, … - just works. Output is captured and handed back to the
 agent so it can decide what to do next.
 
 A short list of obviously dangerous patterns is flagged so the CLI can insist on
@@ -49,7 +49,7 @@ _CD_RE = re.compile(
 
 def resolve_cd_command(command: str) -> tuple[str, str | None]:
     """If `command` is a plain `cd` into a MISSING relative folder, rewrite it to
-    the closest existing one. Returns (command, matched_name|None) — unchanged
+    the closest existing one. Returns (command, matched_name|None) - unchanged
     when it isn't a simple cd, the target already exists, or there's no match.
     """
     match = _CD_RE.match(command or "")
@@ -65,7 +65,7 @@ def resolve_cd_command(command: str) -> tuple[str, str | None]:
 
 # After a tracked command we make the shell print its final directory on this
 # sentinel line, so a `cd` (or pushd, Set-Location, etc.) PERSISTS to the next
-# command — exactly like a real terminal. The line is stripped from the output
+# command - exactly like a real terminal. The line is stripped from the output
 # the user/model sees.
 _CWD_MARKER = "<<UTRAINS_CWD::"
 
@@ -92,7 +92,7 @@ def _apply_cwd(new_cwd: str | None) -> None:
             pass
 
 # Commands that can wipe data or take a machine down. Matching ONE of these
-# doesn't block anything — it just forces an extra "are you sure?" prompt.
+# doesn't block anything - it just forces an extra "are you sure?" prompt.
 DANGEROUS_PATTERNS = [
     r"\brm\s+-[a-z]*r[a-z]*f",      # rm -rf
     r"\brmdir\b.*\b/s\b",
@@ -150,7 +150,7 @@ def run_command(command: str, timeout: int = 600, cwd: str | None = None,
     Run one shell command and return what happened.
 
     Returns a dict with: returncode, stdout, stderr. A timeout reports code 124,
-    and a missing shell reports code 127 — so the agent always gets a clean result
+    and a missing shell reports code 127 - so the agent always gets a clean result
     instead of an exception.
 
     If on_output is given, it is called with each output line AS IT ARRIVES, so
@@ -207,7 +207,7 @@ def run_command(command: str, timeout: int = 600, cwd: str | None = None,
     captured: list[str] = []
     captured_cwd = {"path": None}
     buf = ""
-    pending_cr = False   # saw a '\r' — wait one char to tell CRLF from a lone CR
+    pending_cr = False   # saw a '\r' - wait one char to tell CRLF from a lone CR
 
     def _finish_line(line: str) -> None:
         # The cwd marker line is swallowed (used to persist `cd`), never shown.
@@ -226,10 +226,10 @@ def run_command(command: str, timeout: int = 600, cwd: str | None = None,
                 if pending_cr:
                     pending_cr = False
                     if ch == "\n":
-                        _finish_line(buf)      # "\r\n" — a real (Windows) line ending
+                        _finish_line(buf)      # "\r\n" - a real (Windows) line ending
                         buf = ""
                         continue
-                    # lone "\r" — an in-place progress redraw; show, don't capture
+                    # lone "\r" - an in-place progress redraw; show, don't capture
                     on_output(buf, "\r")
                     buf = ""
                 if ch == "\r":

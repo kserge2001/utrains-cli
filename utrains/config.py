@@ -33,7 +33,7 @@ def load_env() -> None:
     """
     Load a .env file into the environment (without overriding existing vars).
 
-    Checks ./.env first (project-local), then ~/.utrains/.env (global) — so users
+    Checks ./.env first (project-local), then ~/.utrains/.env (global) - so users
     can keep ANTHROPIC_API_KEY / OPENAI_API_KEY in a file instead of exporting
     them every session. Simple KEY=VALUE lines; # comments allowed.
     """

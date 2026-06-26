@@ -1,6 +1,6 @@
 # Installing utrains
 
-utrains installs straight from GitHub — no S3, no servers, nothing to pay for.
+utrains installs straight from GitHub - no S3, no servers, nothing to pay for.
 You only need **Python 3.10+** (the installer checks and tells you if it's missing).
 
 ## Windows (PowerShell)
@@ -25,10 +25,10 @@ curl -fsSL https://raw.githubusercontent.com/kserge2001/utrains-cli/main/install
 ## After installing
 
 ```bash
-# Option A — run a LOCAL model (private, free, no API key):
+# Option A - run a LOCAL model (private, free, no API key):
 utrains setup        # installs Ollama and pulls a model sized to your machine
 
-# Option B — use GPT or Claude:
+# Option B - use GPT or Claude:
 #   put your key in a .env file next to where you run utrains:
 #     OPENAI_API_KEY=sk-...
 #     # or
@@ -41,7 +41,7 @@ utrains --tui        # full-screen animated UI
 
 ## Updating
 
-Re-run the same one-liner — it always pulls the latest from GitHub.
+Re-run the same one-liner - it always pulls the latest from GitHub.
 
 ## Uninstalling
 

@@ -1,5 +1,5 @@
 """
-The `utrains` command itself — argument parsing and the user-facing loop.
+The `utrains` command itself - argument parsing and the user-facing loop.
 
 Usage shapes:
     utrains setup [--model NAME] [--yes]   # one-time install + model pull
@@ -110,7 +110,7 @@ class StepRenderer:
         elif kind == "opened":
             self._clear_status()
             print(ui.style(f"  📂 opened {payload['path']}:{payload['line']} in VS Code "
-                           "— take a look 👀", "accent"))
+                           "- take a look 👀", "accent"))
         elif kind == "error":
             self._clear_status()
             print(ui.style(f"  ✗ {payload}", "danger"))
@@ -128,7 +128,7 @@ class StepRenderer:
         """A memory block listing commands already run + their results this session."""
         if not self.actions:
             return ""
-        return ("Commands already run this session and their results — reuse these "
+        return ("Commands already run this session and their results - reuse these "
                 "answers, do NOT run the same command again for the same info:\n"
                 + "\n".join(self.actions))
 
@@ -162,7 +162,7 @@ class StepRenderer:
                 print(f"  {bar} {ui.style(l, 'dim')}")
         elif lines:
             print(f"  {bar} {ui.style(lines[0], 'dim')}")
-            print(f"  {bar} " + ui.style(f"… {len(lines) - 1} more lines — type /output to view", "warn"))
+            print(f"  {bar} " + ui.style(f"… {len(lines) - 1} more lines - type /output to view", "warn"))
 
         if exit_line:
             print(ui.style(f"  └ exit {returncode}", tone))
@@ -189,7 +189,7 @@ def _git_branch() -> str | None:
             except OSError:
                 return None
             return txt.rsplit("/", 1)[-1] if txt.startswith("ref:") else txt[:7]
-        if (parent / ".git").is_file():   # worktree/submodule — skip cheaply
+        if (parent / ".git").is_file():   # worktree/submodule - skip cheaply
             return None
     return None
 
@@ -235,7 +235,7 @@ def _run_shell(command: str, renderer) -> None:
 
 def _make_confirm(state: dict):
     """
-    Approval prompt before each action — an arrow-navigable menu (↑/↓, numbers,
+    Approval prompt before each action - an arrow-navigable menu (↑/↓, numbers,
     Enter). Option 1 is the safe default (Run normally, Skip when dangerous).
 
     `state` is a live dict {"auto", "force"} so /auto can flip it mid-session:
@@ -292,7 +292,7 @@ def _resolve_model(override: str | None) -> str | None:
 
 def _preflight(model: str) -> bool:
     provider = detect_provider(model)
-    if provider in _PROVIDER_KEY:           # cloud model — just needs its API key
+    if provider in _PROVIDER_KEY:           # cloud model - just needs its API key
         key = _PROVIDER_KEY[provider]
         if not os.getenv(key):
             print(ui.style(f"✗ {key} isn't set. Add it to your environment or "
@@ -363,7 +363,7 @@ def cmd_chat(*, model_override, auto, force, dry_run, use_tui=False) -> int:
             from .tui import run_tui
         except ImportError:
             run_tui = None
-            print(ui.style("(textual not installed — `pip install textual` for the TUI)", "dim"))
+            print(ui.style("(textual not installed - `pip install textual` for the TUI)", "dim"))
         if run_tui is not None:
             manager = _start_mcp()
             try:
@@ -431,32 +431,32 @@ def cmd_chat(*, model_override, auto, force, dry_run, use_tui=False) -> int:
             if head in ("/ai", "ai"):
                 ai_on = {"on": True, "off": False}.get(arg.lower(), not ai_on)
                 if ai_on:
-                    print(ui.style("✓ AI ON — type a goal and I'll do it.", "ok"))
+                    print(ui.style("✓ AI ON - type a goal and I'll do it.", "ok"))
                 else:
-                    print(ui.style("✓ AI OFF — this is a plain shell now; "
+                    print(ui.style("✓ AI OFF - this is a plain shell now; "
                                    "type raw commands and I'll just run them.", "warn"))
                 continue
             if head in ("/coach", "coach"):
                 state["coach"] = {"on": True, "off": False}.get(arg.lower(), not state["coach"])
                 if state["coach"]:
-                    print(ui.style("✓ Coach ON — small slips become a nudge for you to "
+                    print(ui.style("✓ Coach ON - small slips become a nudge for you to "
                                    "fix yourself. 👀", "ok"))
                 else:
-                    print(ui.style("✓ Coach OFF — I'll just fix small errors myself.", "warn"))
+                    print(ui.style("✓ Coach OFF - I'll just fix small errors myself.", "warn"))
                 continue
             if head in ("/auto", "auto"):
                 a = arg.lower()
                 if a == "off":
                     state["auto"], state["force"] = False, False
-                    print(ui.style("✓ Auto OFF — I'll ask before each command.", "ok"))
+                    print(ui.style("✓ Auto OFF - I'll ask before each command.", "ok"))
                 elif a == "force":
                     state["auto"], state["force"] = True, True
-                    print(ui.style("⚠ Auto FORCE — running EVERYTHING unattended, "
+                    print(ui.style("⚠ Auto FORCE - running EVERYTHING unattended, "
                                    "including dangerous commands. Use only in throwaway "
                                    "environments.", "danger"))
                 else:   # "on" or bare
                     state["auto"], state["force"] = True, False
-                    print(ui.style("✓ Auto ON — hands-free. Safe commands run on their "
+                    print(ui.style("✓ Auto ON - hands-free. Safe commands run on their "
                                    "own; dangerous ones are skipped & logged for you to "
                                    "review. Go get some sleep. 😴", "ok"))
                 continue
@@ -506,7 +506,7 @@ def _print_chat_help():
         print(ui.style("  • ", "accent") + example)
     print("\n" + ui.style("Commands:", "heading"))
     rows = [
-        ("/status", "status board of this session — what's done & what's next"),
+        ("/status", "status board of this session - what's done & what's next"),
         ("/ai [on|off]", "toggle AI; off = a plain shell (run raw commands)"),
         ("/coach [on|off]", "on (default): nudge you to fix small slips yourself"),
         ("/auto [on|off|force]", "hands-free: run without asking (force = even dangerous)"),
@@ -602,7 +602,7 @@ def cmd_mcp() -> int:
     manager = MCPManager().load()
     if not manager.has_servers():
         print(ui.style("No MCP servers configured.", "dim"))
-        print("Create ~/.utrains/mcp.json — see the README for the format.")
+        print("Create ~/.utrains/mcp.json - see the README for the format.")
         return 0
     try:
         status = manager.start_all()
@@ -684,7 +684,7 @@ def _print_help() -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Entry point — runs the CLI and turns Ctrl+C into a clean exit."""
+    """Entry point - runs the CLI and turns Ctrl+C into a clean exit."""
     enable_utf8_output()
     config.load_env()   # pull API keys from ~/.utrains/.env (and ./.env) if present
     try:

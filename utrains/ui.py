@@ -1,12 +1,12 @@
 """
-The look of utrains — a calm dark theme and a live "thinking" animation.
+The look of utrains - a calm dark theme and a live "thinking" animation.
 
 Plain ANSI escape codes, no third-party libraries. Colours auto-disable when the
 output isn't a real terminal or when NO_COLOR is set, so piping to a file stays
 clean. Windows VT support is switched on in utrains/__init__.py.
 
 The palette is tuned for dark terminals: soft, slightly muted tones (teal,
-violet, mint, amber) rather than harsh primary colours — easy on the eyes and
+violet, mint, amber) rather than harsh primary colours - easy on the eyes and
 never pure black-on-black.
 """
 
@@ -21,16 +21,16 @@ import time
 
 # True-colour palette (R;G;B). Muted/desaturated for easy-on-the-eyes dark terminals.
 _PALETTE = {
-    "accent":  "38;2;95;209;191",    # teal    — prompts, brand
-    "purple":  "38;2;176;140;221",   # purple  — spinner / step marker
-    "heading": "38;2;170;150;225",   # violet  — titles
-    "ok":      "38;2;127;207;154",   # green   — success / output
-    "warn":    "38;2;225;180;95",    # amber   — caution
-    "danger":  "38;2;216;138;138",   # red     — destructive
-    "dim":     "38;2;154;163;179",   # slate   — secondary text
+    "accent":  "38;2;95;209;191",    # teal    - prompts, brand
+    "purple":  "38;2;176;140;221",   # purple  - spinner / step marker
+    "heading": "38;2;170;150;225",   # violet  - titles
+    "ok":      "38;2;127;207;154",   # green   - success / output
+    "warn":    "38;2;225;180;95",    # amber   - caution
+    "danger":  "38;2;216;138;138",   # red     - destructive
+    "dim":     "38;2;154;163;179",   # slate   - secondary text
     "bold":    "1",
     "blink":   "5",                  # slow blink (for the live "Thinking…")
-    "invert":  "7",                  # reverse video — highlights the default choice
+    "invert":  "7",                  # reverse video - highlights the default choice
 }
 _RESET = "\033[0m"
 
@@ -69,7 +69,7 @@ def box(lines, title: str = "", color: str = "accent") -> str:
     """
     Draw a rounded box around the given lines (Copilot/Cursor-style card).
 
-    Lines may already contain colour codes — width is measured on the visible
+    Lines may already contain colour codes - width is measured on the visible
     text, so padding stays correct.
     """
     content_w = max([_visible_len(l) for l in lines] + [_visible_len(title) + 2])
@@ -77,7 +77,7 @@ def box(lines, title: str = "", color: str = "accent") -> str:
     interior = content_w + 2
 
     if title:
-        # "╭─ Title ───…╮"  — 3 chars for "╭─ ", 1 space after the title.
+        # "╭─ Title ───…╮"  - 3 chars for "╭─ ", 1 space after the title.
         tail = "─" * max(0, interior - _visible_len(title) - 3) + "╮"
         top = style("╭─ ", color) + style(title, color, "bold") + style(" " + tail, color)
     else:
@@ -183,7 +183,7 @@ def spinner(text: str = "Thinking", color: str = "purple") -> Spinner:
 
 
 # --------------------------------------------------------------------------
-# Text wrapping & light markdown — keeps long output readable in a terminal.
+# Text wrapping & light markdown - keeps long output readable in a terminal.
 # --------------------------------------------------------------------------
 
 def term_width() -> int:
@@ -217,7 +217,7 @@ _CODE_RE = re.compile(r"`([^`]+)`")
 
 
 def _plain(text: str) -> str:
-    """The text as it appears on screen — markup and ANSI stripped."""
+    """The text as it appears on screen - markup and ANSI stripped."""
     text = _ANSI_RE.sub("", text)
     text = _BOLD_RE.sub(r"\1", text)
     return _CODE_RE.sub(r"\1", text)
@@ -308,8 +308,8 @@ def _md_code_block(lines: list[str]) -> str:
 
 
 def md(text: str) -> str:
-    """Render light markdown — headings, tables, code blocks, bullets, **bold**,
-    `code` — into colourful terminal output (Copilot/Cursor-style)."""
+    """Render light markdown - headings, tables, code blocks, bullets, **bold**,
+    `code` - into colourful terminal output (Copilot/Cursor-style)."""
     lines = (text or "").split("\n")
     out: list[str] = []
     i = 0
@@ -347,7 +347,7 @@ def md(text: str) -> str:
 
 
 # --------------------------------------------------------------------------
-# Interactive selection menu — arrow keys (↑/↓), number keys, or Enter.
+# Interactive selection menu - arrow keys (↑/↓), number keys, or Enter.
 # --------------------------------------------------------------------------
 
 def _interactive() -> bool:

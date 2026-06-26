@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# utrains installer for macOS / Linux — installs straight from GitHub.
+# utrains installer for macOS / Linux - installs straight from GitHub.
 # No S3, no git required: pip pulls a zip from GitHub's free archive endpoint.
 #
 # Users run ONE line (no download, no clone):
@@ -10,7 +10,7 @@ set -euo pipefail
 # ----------------------- CONFIG: point this at your repo ----------------------
 REPO="kserge2001/utrains-cli"
 BRANCH="main"
-# Leave SUBDIR empty if utrains-cli is the repo ROOT (recommended — no git needed).
+# Leave SUBDIR empty if utrains-cli is the repo ROOT (recommended - no git needed).
 # Set it (e.g. "utrains-cli") only if the package lives in a subfolder (needs git).
 SUBDIR=""
 # -----------------------------------------------------------------------------

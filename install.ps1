@@ -1,4 +1,4 @@
-# utrains installer for Windows (PowerShell) — installs straight from GitHub.
+# utrains installer for Windows (PowerShell) - installs straight from GitHub.
 # No S3, no git required: pip pulls a zip from GitHub's free archive endpoint.
 #
 # Users run ONE line (no download, no clone):
@@ -9,7 +9,7 @@ $ErrorActionPreference = "Stop"
 # ----------------------- CONFIG: point this at your repo ----------------------
 $Repo   = "kserge2001/utrains-cli"
 $Branch = "main"
-# Leave $Subdir EMPTY if utrains-cli is the repo ROOT (recommended — no git needed).
+# Leave $Subdir EMPTY if utrains-cli is the repo ROOT (recommended - no git needed).
 # Set it (e.g. "utrains-cli") only if the package lives in a subfolder (needs git).
 $Subdir = ""
 # -----------------------------------------------------------------------------

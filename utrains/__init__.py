@@ -1,5 +1,5 @@
 """
-utrains — a local, LLM-powered operations agent for your terminal.
+utrains - a local, LLM-powered operations agent for your terminal.
 
 You type what you want in plain English; utrains decides which shell commands
 to run (Windows, Linux, Docker, AWS, Azure, GitHub, Python, git, kubectl …),

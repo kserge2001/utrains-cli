@@ -1,4 +1,4 @@
-# utrains — your local terminal operations agent
+# utrains - your local terminal operations agent
 
 `utrains` is a command-line AI agent that runs **on your machine**. You tell it
 what you want in plain English; it figures out the shell commands, shows them to
@@ -58,7 +58,7 @@ and authenticate `gh`. utrains uses whatever credentials those tools already hav
 
 ---
 
-## Install — get the `utrains` command ready
+## Install - get the `utrains` command ready
 
 ### 1. Get the code
 Copy/clone this `utrains-cli` folder onto the target computer, then open a
@@ -85,7 +85,7 @@ Either script installs the package with pip and creates the `utrains` command.
 
 ### 3. Make sure `utrains` is on your PATH
 - **Windows:** the command lives in your Python user `Scripts` folder. The
-  installer prints the exact path — add it to your PATH if `utrains` isn't found.
+  installer prints the exact path - add it to your PATH if `utrains` isn't found.
 - **Linux/macOS:** add `~/.local/bin` to your PATH if needed:
   ```bash
   export PATH="$HOME/.local/bin:$PATH"
@@ -102,7 +102,7 @@ utrains setup
 ```
 This runs an **interactive** setup that:
 1. Shows your machine's specs (OS, RAM, CPU, detected tools).
-2. **Suggests models in a menu**, sized to your RAM — the best fit is marked
+2. **Suggests models in a menu**, sized to your RAM - the best fit is marked
    `← recommended`, and any model too big for your RAM is flagged. Pick by number,
    press Enter to accept the recommendation, or type any Ollama model name:
    ```text
@@ -117,7 +117,7 @@ This runs an **interactive** setup that:
    Pick a model [Enter = qwen2.5:32b]:
    ```
 3. **Installs Ollama** if it isn't already (Linux: official script · Windows:
-   winget · macOS: Homebrew — otherwise it points you to the download).
+   winget · macOS: Homebrew - otherwise it points you to the download).
 4. **Starts the Ollama server**.
 5. **Pulls the chosen model** and remembers it in `~/.utrains/config.json`.
 
@@ -199,7 +199,7 @@ utrains --model claude-opus-4-8 "is docker the latest version?"
 utrains chat
 you › /model gpt-4.1
 ```
-Cloud models need **no Ollama and no download** — much stronger reasoning than a local model, billed to your API account. Check `utrains doctor` to see which keys are detected.
+Cloud models need **no Ollama and no download** - much stronger reasoning than a local model, billed to your API account. Check `utrains doctor` to see which keys are detected.
 
 ### Switching model mid-conversation
 
@@ -214,11 +214,11 @@ you › /help                   # quick tips and commands
 
 The new choice is saved as your default for next time.
 
-### Memory — what it remembers
+### Memory - what it remembers
 
 By default utrains keeps **session memory** (so follow-ups like "now stop that
 container" have context) and can hold **persistent notes** in
-`~/.utrains/memory.md` that are fed into every run — handy for facts like
+`~/.utrains/memory.md` that are fed into every run - handy for facts like
 *"prod cluster is eks-east"* or *"default AWS profile is acme-prod"*.
 
 One switch turns both off (cleaner, faster prompts on small models):
@@ -233,7 +233,7 @@ utrains memory on | off | clear
 ### Credentials are automatic
 
 utrains runs commands through your real shell, so each CLI uses **its own existing
-login** — `aws` reads `~/.aws` + `AWS_PROFILE`, `kubectl` reads `~/.kube/config` +
+login** - `aws` reads `~/.aws` + `AWS_PROFILE`, `kubectl` reads `~/.kube/config` +
 `KUBECONFIG`, `gh` uses its stored token, `az` uses its login cache. You never
 hand utrains any keys, and it's told not to ask. Want a specific AWS profile or
 cluster? Set the env var before launching:
@@ -245,7 +245,7 @@ $env:AWS_PROFILE = "prod"; utrains "list my running EC2 instances"
 AWS_PROFILE=prod KUBECONFIG=~/.kube/prod utrains "how many pods are not Ready?"
 ```
 
-### MCP — extra tools from Model Context Protocol servers
+### MCP - extra tools from Model Context Protocol servers
 
 Beyond the shell, utrains can use tools from **MCP servers**. Create
 `~/.utrains/mcp.json`:
@@ -264,7 +264,7 @@ Beyond the shell, utrains can use tools from **MCP servers**. Create
 
 `${GITHUB_TOKEN}` is filled from your environment. On launch utrains starts each
 server, lists its tools (exposed to the agent as `server.tool`, e.g.
-`github.create_issue`), and the agent can call them — with the same per-action
+`github.create_issue`), and the agent can call them - with the same per-action
 approval as shell commands. Inspect what's available:
 
 ```bash
@@ -280,7 +280,7 @@ utrains mcp        # list configured servers and their tools
 The chat UI uses a calm **dark theme** (muted teal/violet/mint, never harsh) and
 shows a **live purple spinner** with rotating, playful "thinking" lines while the
 model works. Confirm prompts are a **vertical numbered menu** with option 1
-(the safe default) highlighted — just press Enter to take it.
+(the safe default) highlighted - just press Enter to take it.
 
 It also has a bit of personality for Utrains students: random greetings, tips,
 and the occasional celebratory tag. Want it all-business?
@@ -312,7 +312,7 @@ utrains help
 - **Every command is shown and requires your approval** before running.
 - **Destructive commands** (deleting data, formatting disks, `git push --force`,
   dropping databases, shutdown, …) are flagged and **always** ask for
-  confirmation — even in `--auto` mode — unless you pass `--force`.
+  confirmation - even in `--auto` mode - unless you pass `--force`.
 - The agent is instructed to gather facts with read-only commands first, to stop
   and ask when unsure, and never to print full secrets.
 - `--dry-run` lets you preview a plan with zero risk.
@@ -332,7 +332,7 @@ your words → Ollama (local model) → one shell command (JSON)
 
 The agent loops: the model proposes **one** command in a small JSON format,
 utrains shows it, you approve, it runs through your native shell, the output is
-fed back, and the model decides the next step — until it reports it's done.
+fed back, and the model decides the next step - until it reports it's done.
 
 ### Project layout
 
@@ -376,4 +376,4 @@ Windows). Remove Ollama and its models separately if you no longer want them.
 
 ---
 
-MIT licensed. Built to be read — open any file in `utrains/` and it explains itself.
+MIT licensed. Built to be read - open any file in `utrains/` and it explains itself.
