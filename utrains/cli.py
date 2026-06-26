@@ -27,7 +27,7 @@ from . import (__version__, agent, config, enable_utf8_output, executor, fun,
                installer, memory, ollama_client, ui)
 from .mcp_client import MCPError, MCPManager
 from .providers import detect_provider
-from .system_info import recommend_model, system_summary
+from .system_info import system_summary
 
 # Env var that holds the API key for each cloud provider.
 _PROVIDER_KEY = {"anthropic": "ANTHROPIC_API_KEY", "openai": "OPENAI_API_KEY"}
@@ -281,13 +281,35 @@ def _make_confirm(state: dict):
 # ----- model / server preflight --------------------------------------------
 
 def _resolve_model(override: str | None) -> str | None:
+    """The model to use, or None if nothing is set up yet (→ first-run screen)."""
     model = override or config.get_model()
     if model:
         return model
-    guessed = recommend_model(system_summary()["ram_gb"])
-    print(ui.style(f"No model configured. Falling back to '{guessed}'. "
-                   f"Run `utrains setup` to install and remember one.", "warn"))
-    return guessed
+    # No saved model: if a cloud key is present, just use that provider's default.
+    if os.getenv("OPENAI_API_KEY"):
+        return "gpt-4.1"
+    if os.getenv("ANTHROPIC_API_KEY"):
+        return "claude-opus-4-8"
+    return None   # nothing configured yet → caller shows the welcome/first-run screen
+
+
+def _first_run_screen() -> None:
+    """Friendly onboarding shown when no model and no API key are set up yet."""
+    print()
+    print(ui.style("  👋  Welcome to utrains!", "heading", "bold"))
+    print(ui.style("  Pick how to power it, then run utrains again.", "dim"))
+    print()
+    print("  " + ui.style("1) Use GPT or Claude", "accent", "bold")
+          + ui.style("  - fastest to start", "dim"))
+    print(ui.style("       Add an API key to a .env file next to utrains:", "dim"))
+    print("         OPENAI_API_KEY=sk-...")
+    print(ui.style("         (or ANTHROPIC_API_KEY=sk-ant-...)", "dim"))
+    print()
+    print("  " + ui.style("2) Run a local model", "accent", "bold")
+          + ui.style("  - private, offline, free", "dim"))
+    print("       " + ui.style("utrains setup", "ok", "bold")
+          + ui.style("   (installs Ollama and pulls a model)", "dim"))
+    print()
 
 
 def _preflight(model: str) -> bool:
@@ -329,6 +351,9 @@ def _start_mcp():
 
 def cmd_task(task: str, *, model_override, auto, force, dry_run) -> int:
     model = _resolve_model(model_override)
+    if model is None:
+        _first_run_screen()
+        return 1
     if not _preflight(model):
         return 1
     mode = "DRY-RUN" if dry_run else "live"
@@ -353,6 +378,9 @@ def cmd_task(task: str, *, model_override, auto, force, dry_run) -> int:
 
 def cmd_chat(*, model_override, auto, force, dry_run, use_tui=False) -> int:
     model = _resolve_model(model_override)
+    if model is None:
+        _first_run_screen()
+        return 1
     if not _preflight(model):
         return 1
 
@@ -683,15 +711,38 @@ def _print_help() -> None:
           + ui.style(" for /model, /memory, /mcp and more.", "dim") + "\n")
 
 
+def _launched_by_double_click() -> bool:
+    """True if a frozen binary was started from Explorer/Finder (its own fresh
+    console window), so we should hold the window open instead of vanishing."""
+    if not getattr(sys, "frozen", False):
+        return False
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            buf = (ctypes.c_uint * 4)()
+            # Only THIS process attached to the console → it was double-clicked.
+            return ctypes.windll.kernel32.GetConsoleProcessList(buf, 4) <= 1
+        except Exception:
+            return False
+    return False
+
+
 def main(argv: list[str] | None = None) -> int:
     """Entry point - runs the CLI and turns Ctrl+C into a clean exit."""
     enable_utf8_output()
     config.load_env()   # pull API keys from ~/.utrains/.env (and ./.env) if present
+    hold = _launched_by_double_click()
     try:
         return _dispatch(argv)
     except KeyboardInterrupt:
         print("\n" + ui.style("Interrupted. Bye!", "dim"))
         return 130
+    finally:
+        if hold:
+            try:
+                input("\nPress Enter to close this window...")
+            except (EOFError, KeyboardInterrupt):
+                pass
 
 
 def _dispatch(argv: list[str] | None = None) -> int:

@@ -119,27 +119,29 @@ def choose_model(info: dict, model_arg: str | None = None, auto: bool = False) -
     if auto:
         return recommended
 
-    ram = info["ram_gb"]
-    print("Suggested models for this machine (based on your RAM):\n")
-    for i, m in enumerate(MODEL_CATALOG, 1):
-        fits = ram is None or ram >= m["min_ram"]
-        marker = "  ← recommended" if m["name"] == recommended else ""
-        warn = "" if fits else "  (⚠ may be slow on this machine)"
-        print(f"  {i}. {m['name']:<13} {m['size']:<8} {m['note']}{marker}{warn}")
-    print(f"  {len(MODEL_CATALOG) + 1}. other (type any Ollama model name)\n")
+    from . import ui
 
-    choice = input(f"Pick a model [Enter = {recommended}]: ").strip()
-    if not choice:
-        return recommended
-    if choice.isdigit():
-        idx = int(choice)
-        if 1 <= idx <= len(MODEL_CATALOG):
-            return MODEL_CATALOG[idx - 1]["name"]
-        if idx == len(MODEL_CATALOG) + 1:
-            typed = input("Enter the Ollama model name: ").strip()
-            return typed or recommended
-    # Anything else: treat what they typed as a model name.
-    return choice
+    ram = info["ram_gb"]
+    options = []
+    default_idx = 0
+    for i, m in enumerate(MODEL_CATALOG):
+        fits = ram is None or ram >= m["min_ram"]
+        label = f"{m['name']:<13} {m['size']:<8} {m['note']}"
+        if m["name"] == recommended:
+            label += "  ← recommended"
+            default_idx = i
+        if not fits:
+            label += "  (⚠ may be slow)"
+        options.append((label, "ok" if fits else "warn"))
+    options.append(("other (type any Ollama model name)", "dim"))
+
+    print("Suggested models for this machine (based on your RAM):")
+    print(ui.style("  Use ↑/↓ then Enter, press a number, or click.\n", "dim"))
+    idx = ui.select(options, default=default_idx)
+    if idx == len(MODEL_CATALOG):                       # "other"
+        typed = input("Enter the Ollama model name: ").strip()
+        return typed or recommended
+    return MODEL_CATALOG[idx]["name"]
 
 
 def run_setup(model: str | None = None, auto: bool = False) -> int:
