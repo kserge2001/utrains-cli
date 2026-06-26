@@ -32,7 +32,8 @@ from .system_info import system_summary
 # Env var that holds the API key for each cloud provider.
 _PROVIDER_KEY = {"anthropic": "ANTHROPIC_API_KEY", "openai": "OPENAI_API_KEY"}
 
-SUBCOMMANDS = {"setup", "chat", "models", "memory", "mcp", "doctor", "version", "help", "run"}
+SUBCOMMANDS = {"install", "setup", "chat", "models", "memory", "mcp", "doctor",
+               "version", "help", "run"}
 
 # ----- pretty output --------------------------------------------------------
 
@@ -686,6 +687,7 @@ def _print_help() -> None:
             ("utrains", "same as chat"),
         ]),
         ("Setup & info", [
+            ("utrains install", "put `utrains` on your PATH (for the downloaded binary)"),
             ("utrains setup", "install Ollama + pick/pull a model"),
             ("utrains doctor", "machine + Ollama/memory/MCP health"),
             ("utrains models", "list local models"),
@@ -709,6 +711,105 @@ def _print_help() -> None:
         print()
     print(ui.style("  In chat, type ", "dim") + ui.style("/help", "accent")
           + ui.style(" for /model, /memory, /mcp and more.", "dim") + "\n")
+
+
+def _install_paths() -> tuple[Path, Path]:
+    """(dir, exe) where the binary installs itself so `utrains` is on PATH."""
+    if sys.platform == "win32":
+        base = Path(os.environ.get("LOCALAPPDATA") or Path.home()) / "Programs" / "utrains"
+        return base, base / "utrains.exe"
+    base = Path.home() / ".local" / "bin"
+    return base, base / "utrains"
+
+
+def _is_installed_copy() -> bool:
+    """True if we're NOT a stray downloaded binary needing install."""
+    if not getattr(sys, "frozen", False):
+        return True   # pip install already put `utrains` on PATH
+    _, dest = _install_paths()
+    try:
+        return Path(sys.executable).resolve() == dest.resolve()
+    except OSError:
+        return False
+
+
+def _add_to_path(directory: str) -> bool:
+    """Add `directory` to the user's PATH. Returns True if it was newly added."""
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            import winreg
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Environment", 0,
+                                winreg.KEY_READ | winreg.KEY_WRITE) as key:
+                try:
+                    current, _ = winreg.QueryValueEx(key, "Path")
+                except FileNotFoundError:
+                    current = ""
+                parts = [p for p in current.split(";") if p]
+                if any(p.lower() == directory.lower() for p in parts):
+                    return False
+                winreg.SetValueEx(key, "Path", 0, winreg.REG_EXPAND_SZ,
+                                  ";".join([*parts, directory]))
+            # Tell new processes the environment changed.
+            ctypes.windll.user32.SendMessageTimeoutW(
+                0xFFFF, 0x1A, 0, "Environment", 0, 5000, ctypes.byref(ctypes.c_ulong()))
+            return True
+        except OSError:
+            return False
+    # macOS / Linux
+    if directory in os.environ.get("PATH", "").split(os.pathsep):
+        return False
+    profile = Path.home() / (".zshrc" if sys.platform == "darwin" else ".bashrc")
+    try:
+        with open(profile, "a", encoding="utf-8") as fh:
+            fh.write(f'\n# added by utrains install\nexport PATH="{directory}:$PATH"\n')
+        return True
+    except OSError:
+        return False
+
+
+def _self_install() -> int:
+    """Copy this binary into a PATH folder so `utrains` works from any terminal."""
+    import shutil
+    if not getattr(sys, "frozen", False):
+        print(ui.style("Nothing to do - installed via pip, so `utrains` is already "
+                       "on your PATH.", "dim"))
+        return 0
+    dest_dir, dest = _install_paths()
+    src = Path(sys.executable)
+    try:
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        if src.resolve() != dest.resolve():
+            shutil.copy2(src, dest)
+        if sys.platform != "win32":
+            os.chmod(dest, 0o755)
+    except OSError as exc:
+        print(ui.style(f"✗ Could not install to {dest}: {exc}", "danger"))
+        return 1
+    added = _add_to_path(str(dest_dir))
+    print(ui.style(f"✓ Installed to {dest}", "ok", "bold"))
+    run = ui.style("utrains", "accent", "bold")
+    if sys.platform == "win32":
+        print(ui.style("  Open a NEW terminal / PowerShell and type:  ", "dim") + run)
+    else:
+        tail = "  (open a new terminal first)" if added else ""
+        print(ui.style("  Run:  ", "dim") + run + ui.style(tail, "dim"))
+    return 0
+
+
+def _offer_install() -> bool:
+    """On a double-clicked, not-yet-installed binary, offer to install. True if done."""
+    print()
+    print(ui.style("  👋  utrains is running from a downloaded file.", "heading", "bold"))
+    try:
+        ans = input("  Install it so you can run 'utrains' from any terminal? [Y/n] ")
+    except (EOFError, KeyboardInterrupt):
+        return False
+    if ans.strip().lower() in ("", "y", "yes"):
+        _self_install()
+        return True
+    print(ui.style("  Skipped. You can install later with:  utrains install", "dim"))
+    return False
 
 
 def _launched_by_double_click() -> bool:
@@ -756,6 +857,11 @@ def _dispatch(argv: list[str] | None = None) -> int:
     model_override = _take_option(argv, "--model")
 
     if not argv:
+        # A downloaded binary opened by double-click: offer to install it onto
+        # PATH first, so `utrains` works from any terminal.
+        if _launched_by_double_click() and not _is_installed_copy():
+            if _offer_install():
+                return 0
         return cmd_chat(model_override=model_override, auto=auto, force=force,
                         dry_run=dry_run, use_tui=use_tui)
 
@@ -767,6 +873,8 @@ def _dispatch(argv: list[str] | None = None) -> int:
     if first in ("help", "--help", "-h"):
         _print_help()
         return 0
+    if first == "install":
+        return _self_install()
     if first == "setup":
         return installer.run_setup(model=model_override, auto=auto)
     if first == "models":

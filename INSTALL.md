@@ -10,14 +10,13 @@ Grab the single file for your system from the latest release and run it:
 **Windows**
 1. Download **utrains-windows.exe**:
    <https://github.com/kserge2001/utrains-cli/releases/latest/download/utrains-windows.exe>
-2. Windows may show a blue "Windows protected your PC" box (the app isn't
-   code-signed yet) - click **More info -> Run anyway**.
-3. Open **PowerShell** in your Downloads folder and run:
-   ```powershell
-   .\utrains-windows.exe
-   ```
-   (Tip: rename it to `utrains.exe` and move it somewhere on your PATH so you can
-   just type `utrains` anywhere.)
+2. **Double-click it.** Windows may show a blue "Windows protected your PC" box
+   (the app isn't code-signed yet) - click **More info -> Run anyway**.
+3. It will ask: *"Install it so you can run 'utrains' from any terminal? [Y/n]"* -
+   press **Enter**. Then open a **new** PowerShell and just type `utrains`.
+
+   (Prefer to do it yourself? Run `.\utrains-windows.exe install` from PowerShell,
+   or drop the file in any folder that's already on your PATH.)
 
 **macOS**
 1. Download **utrains-macos**:

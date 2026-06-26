@@ -8,7 +8,7 @@ is done. The "brain" is a local model served by Ollama, so nothing leaves your
 machine.
 """
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 
 def enable_utf8_output() -> None:
