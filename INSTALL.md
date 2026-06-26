@@ -1,56 +1,69 @@
-# Installing utrains
+# Get utrains
 
-utrains installs straight from GitHub - no S3, no servers, nothing to pay for.
-You only need **Python 3.10+** (the installer checks and tells you if it's missing).
+Two ways to install. Most people want **Option A** - download one file and run it.
+No source code, no setup.
 
-## Windows (PowerShell)
+## Option A - Download & run (no Python, nothing to install)
 
-Open **PowerShell** and paste one line:
+Grab the single file for your system from the latest release and run it:
 
+**Windows**
+1. Download **utrains-windows.exe**:
+   <https://github.com/kserge2001/utrains-cli/releases/latest/download/utrains-windows.exe>
+2. Windows may show a blue "Windows protected your PC" box (the app isn't
+   code-signed yet) - click **More info -> Run anyway**.
+3. Open **PowerShell** in your Downloads folder and run:
+   ```powershell
+   .\utrains-windows.exe
+   ```
+   (Tip: rename it to `utrains.exe` and move it somewhere on your PATH so you can
+   just type `utrains` anywhere.)
+
+**macOS**
+1. Download **utrains-macos**:
+   <https://github.com/kserge2001/utrains-cli/releases/latest/download/utrains-macos>
+2. In **Terminal**:
+   ```bash
+   cd ~/Downloads
+   chmod +x utrains-macos
+   xattr -d com.apple.quarantine utrains-macos   # clears the "unidentified developer" block
+   ./utrains-macos
+   ```
+
+That's it - no Python, no git, no source code to look at.
+
+## Option B - Install with Python (auto-updates)
+
+If you already have **Python 3.10+**, a one-liner installs the `utrains` command:
+
+**Windows (PowerShell)**
 ```powershell
 powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/kserge2001/utrains-cli/main/install.ps1 | iex"
 ```
-
-## macOS / Linux (Terminal)
-
+**macOS / Linux**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/kserge2001/utrains-cli/main/install.sh | bash
 ```
 
-## What it does
-1. Checks for Python 3.10+ (and points you to the download if it's missing).
-2. `pip install`s utrains from GitHub's free zip archive (no git needed).
-3. Installs the `utrains` command for your user account.
-
-## After installing
+## First run
 
 ```bash
-# Option A - run a LOCAL model (private, free, no API key):
+# Option A - a LOCAL model (private, free, no API key):
 utrains setup        # installs Ollama and pulls a model sized to your machine
 
-# Option B - use GPT or Claude:
-#   put your key in a .env file next to where you run utrains:
+# Option B - use GPT or Claude: put your key in a .env file next to utrains:
 #     OPENAI_API_KEY=sk-...
 #     # or
 #     ANTHROPIC_API_KEY=sk-ant-...
 
-# Start chatting:
-utrains              # classic UI (default)
+utrains              # start (classic UI)
 utrains --tui        # full-screen animated UI
 ```
 
-## Updating
-
-Re-run the same one-liner - it always pulls the latest from GitHub.
-
-## Uninstalling
-
-```bash
-pip uninstall utrains
-```
-
 ## Troubleshooting
-- **`utrains` not found** after install → the installer prints the folder to add to
-  your `PATH`. Add it and restart your terminal.
-- **`pip` not found** → install Python from <https://www.python.org/downloads/>
-  (on Windows, tick *"Add python.exe to PATH"*).
+- **Windows SmartScreen / macOS "unidentified developer"** - the binaries aren't
+  code-signed yet, so the OS warns the first time. Use "Run anyway" (Windows) or
+  the `xattr` line above (macOS). Signing removes this (Apple Developer ID is
+  $99/yr; Windows code-signing certs vary).
+- **`utrains` not found (Option B)** - the installer prints the folder to add to
+  your PATH. Add it and restart your terminal.
