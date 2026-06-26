@@ -5,8 +5,9 @@ what you want in plain English; it figures out the shell commands, shows them to
 you, runs them once you approve, reads the output, and keeps going until the job
 is done.
 
-The "brain" is a **local model served by Ollama**, so your commands and data
-never leave your computer. There is no API key and no cloud bill.
+The "brain" is your choice: a **local model via Ollama** (private, free, offline -
+nothing leaves your computer) **or a cloud model** like **GPT or Claude** for
+stronger reasoning (just add an API key). Same agent either way.
 
 ```text
 you › list the docker containers that are using the most memory and stop the biggest one
@@ -51,52 +52,37 @@ and authenticate `gh`. utrains uses whatever credentials those tools already hav
 
 ## Requirements
 
-- **Python 3.10+**
-- **~5–20 GB free disk** for the local model (depends on which one)
-- **RAM** is what decides the model size (see the table further down)
-- Internet access **once**, to download Ollama and pull the model
+- **Downloaded binary + a cloud model (GPT/Claude):** nothing to install - just an API key.
+- **Installing via pip:** **Python 3.10+**.
+- **Local/offline model:** ~5-20 GB free disk and enough RAM for the model (see the
+  table below). `utrains setup` installs Ollama and pulls the model for you.
 
 ---
 
-## Install - get the `utrains` command ready
+## Install
 
-### 1. Get the code
-Copy/clone this `utrains-cli` folder onto the target computer, then open a
-terminal **inside it**.
+**Easiest - download & run (no Python, no setup).** Grab the one file for your OS
+from the [latest release](https://github.com/kserge2001/utrains-cli/releases/latest):
 
-### 2. Install the command
+- **Windows:** [utrains-windows.exe](https://github.com/kserge2001/utrains-cli/releases/latest/download/utrains-windows.exe)
+- **macOS:** [utrains-macos](https://github.com/kserge2001/utrains-cli/releases/latest/download/utrains-macos)
 
-**Windows (PowerShell):**
+**Or install with Python 3.10+ (one line, auto-updates):**
+
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\install.ps1
+# Windows (PowerShell)
+powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/kserge2001/utrains-cli/main/install.ps1 | iex"
 ```
-
-**Linux / macOS:**
 ```bash
-bash install.sh
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/kserge2001/utrains-cli/main/install.sh | bash
 ```
 
-Either script installs the package with pip and creates the `utrains` command.
+Full steps, the SmartScreen/Gatekeeper note, and troubleshooting are in
+**[INSTALL.md](INSTALL.md)**. Verify with `utrains version`.
 
-> Prefer to do it by hand? It's just:
-> ```bash
-> pip install --user .
-> ```
-
-### 3. Make sure `utrains` is on your PATH
-- **Windows:** the command lives in your Python user `Scripts` folder. The
-  installer prints the exact path - add it to your PATH if `utrains` isn't found.
-- **Linux/macOS:** add `~/.local/bin` to your PATH if needed:
-  ```bash
-  export PATH="$HOME/.local/bin:$PATH"
-  ```
-
-Verify it works:
-```bash
-utrains version
-```
-
-### 4. One-time setup (Ollama + a model)
+### Optional: set up a local model (Ollama)
+Only needed if you want a **local/offline** model instead of GPT/Claude:
 ```bash
 utrains setup
 ```
@@ -214,6 +200,24 @@ you › /help                   # quick tips and commands
 
 The new choice is saved as your default for next time.
 
+### In-chat commands
+
+Inside `utrains` (or `utrains chat`):
+
+| Command | What it does |
+|---|---|
+| `/status` | A status board of the session - what's done and what's next |
+| `/ai [on\|off]` | Toggle the AI; off = a plain shell (run raw commands yourself) |
+| `/coach [on\|off]` | On (default): nudges you to fix small slips yourself; off = it just fixes them |
+| `/auto [on\|off\|force]` | Hands-free: run without asking. `force` also runs dangerous commands |
+| `/model [name]` | Switch model (menu if no name) |
+| `/memory …` | Manage what it remembers |
+| `/output` | Show the full output of the last command |
+| `/help` | Tips and commands |
+
+> `utrains` opens the classic line UI by default; `utrains --tui` is the
+> full-screen animated UI.
+
 ### Memory - what it remembers
 
 By default utrains keeps **session memory** (so follow-ups like "now stop that
@@ -324,10 +328,10 @@ You are always the final approver. Read each command before you say yes.
 ## How it works (under the hood)
 
 ```
-your words → Ollama (local model) → one shell command (JSON)
-                ▲                              │
-                │                              ▼
-          observation  ◄── run it (you approve) ── PowerShell/bash
+your words → the model (local Ollama or cloud GPT/Claude) → one shell command (JSON)
+                ▲                                                    │
+                │                                                    ▼
+          observation  ◄────── run it (you approve) ────────── PowerShell/bash
 ```
 
 The agent loops: the model proposes **one** command in a small JSON format,
