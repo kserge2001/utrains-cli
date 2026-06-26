@@ -1,0 +1,62 @@
+name: build-binaries
+
+# Builds standalone utrains binaries (no Python needed by the user) and attaches
+# them to the GitHub Release. Triggered when you push a version tag, e.g.:
+#   git tag v0.1.0 && git push origin v0.1.0
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch: {}   # also runnable by hand from the Actions tab
+
+permissions:
+  contents: write          # needed to upload assets to the Release
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            built: dist/utrains.exe
+            asset: utrains-windows.exe
+          - os: macos-latest
+            built: dist/utrains
+            asset: utrains-macos
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install utrains + PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[cloud]" pyinstaller
+
+      - name: Build standalone binary
+        run: >
+          pyinstaller --onefile --name utrains
+          --collect-all textual
+          --collect-submodules utrains
+          --hidden-import anthropic --hidden-import openai
+          packaging/entry.py
+
+      - name: Rename for the platform
+        shell: bash
+        run: mv "${{ matrix.built }}" "${{ matrix.asset }}"
+
+      - name: Upload binary as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+          path: ${{ matrix.asset }}
+
+      - name: Attach to the GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.asset }}
